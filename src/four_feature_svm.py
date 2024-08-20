@@ -7,14 +7,6 @@ Model has a 77% accuracy.
 
 import librosa.feature as lf
 import numpy as np
-import os
-import librosa.core as lc
-import logging
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.svm import SVC
-from sklearn.metrics import accuracy_score, classification_report
-from datetime import datetime
 
 
 def get_mfcc_feature(y: np.ndarray, sr: int):
@@ -88,44 +80,6 @@ def get_features(audio: np.ndarray, sr: int):
     feature = np.concatenate((mfcc, melspec, chroma, tonnetz))
     return feature
 
-
-now = datetime.now()
-logger = logging.getLogger(__name__)
-path = f"../results/logs/four_feature_svm-{now}.log"
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s -  %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler(path),
-    ]
-
-)
-genres = ["classical","reggae","rock"]
-features = []
-labels = []
-for genre in genres:
-    for file in os.listdir("../data/raw/" + genre):
-        path = os.path.join("../data/raw/" + genre, file)
-        logger.info(f"Loading {genre} features for {path}")
-        y, sr = lc.load(path)
-        feature = get_features(y, sr)
-        features.append(feature)
-        labels.append(genre)
-
-
-X = np.array(features)
-le = LabelEncoder()
-y = le.fit_transform(labels)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-svm_model = SVC(kernel="rbf")
-svm_model.fit(X_train, y_train)
-
-y_pred = svm_model.predict(X_test)
-
-logger.info(f"Accuracy: {accuracy_score(y_test, y_pred)}")
-logger.info(f"Classification report: {classification_report(y_test, y_pred, target_names=le.classes_)}")
 
 
 
