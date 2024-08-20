@@ -1,0 +1,6 @@
+datasets
+datasets[audio]
+pathlib
+scikit-learn
+librosa
+matplotlib
