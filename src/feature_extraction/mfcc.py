@@ -21,10 +21,10 @@ def extract_mfcc(y, sr, n_mfcc=13):
     """
     # Extract MFCC features
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
-    print("MFCC features: \n",mfcc)
+    # print("MFCC features: \n",mfcc)
     # Concatenate these measures
     mfcc_aggregated = scale(generalise(mfcc))
-    print("MFCC aggregated: \n",mfcc_aggregated)
+    # print("MFCC aggregated: \n",mfcc_aggregated)
     return mfcc_aggregated
 
 

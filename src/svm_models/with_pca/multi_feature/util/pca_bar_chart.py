@@ -3,16 +3,7 @@ import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 
 
-def plot_pca_bar_chart(X):
-
-    # Feature names corresponding to each column in X
-    feature_names = [
-        'rms_1', 'rms_2',
-        'rolloff_1', 'rolloff_2',
-        'bandwidth_1', 'bandwidth_2',
-        'contrast_1', 'contrast_2', 'contrast_3', 'contrast_4',
-        'tempo_1'
-    ]
+def plot_pca_bar_chart(X, feature_names):
 
     # Initialize PCA
     pca = PCA()
