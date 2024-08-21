@@ -1,6 +1,6 @@
 import librosa.feature
 import librosa.core as lc
-from .util import generalise, scale, reduce_dimensions
+from .util import generalise, scale
 
 
 def extract_mfcc(y, sr, n_mfcc=13):
