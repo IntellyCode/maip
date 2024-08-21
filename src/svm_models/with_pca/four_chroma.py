@@ -12,7 +12,10 @@ from src.feature_extraction.util import reduce_dimensions
 from src.feature_extraction.chroma import extract_chroma
 
 
-features, labels = load(extract_chroma)
+music, labels = load()
+features = []
+for m in music:
+    features.append(extract_chroma(m[0], m[1]))
 features_2 = reduce_dimensions(features, 2)
 features_3 = reduce_dimensions(features, 3)
 features_4 = reduce_dimensions(features, 4)

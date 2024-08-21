@@ -3,11 +3,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 
-def generalise(array: np.ndarray) ->np.ndarray:
-    mean = array.mean(axis=1)
-    std = array.std(axis=1)
-    max_v = array.max(axis=1)
-    min_v = array.min(axis=1)
+def generalise(array: np.ndarray,axis=1) ->np.ndarray:
+    mean = array.mean(axis=axis)
+    std = array.std(axis=axis)
+    max_v = array.max(axis=axis)
+    min_v = array.min(axis=axis)
 
     return np.concatenate([mean, std, max_v, min_v])
 
@@ -33,5 +33,6 @@ def reduce_dimensions(features,n_components=4):
     reduced_features = pca.fit_transform(features)  # Fit and transform the features
 
     return reduced_features
+
 
 

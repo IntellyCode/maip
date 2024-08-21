@@ -21,16 +21,12 @@ def extract_mfcc(y, sr, n_mfcc=13):
     """
     # Extract MFCC features
     mfcc = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc)
-
+    print("MFCC features: \n",mfcc)
     # Concatenate these measures
     mfcc_aggregated = scale(generalise(mfcc))
-
+    print("MFCC aggregated: \n",mfcc_aggregated)
     return mfcc_aggregated
 
-
-def extract_mfcc_rd(y, sr, rd=4, n_mfcc=13):
-    array = extract_mfcc(y, sr, n_mfcc=n_mfcc)
-    return reduce_dimensions(array, rd)
 
 
 if __name__ == '__main__':

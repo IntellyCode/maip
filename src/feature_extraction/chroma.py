@@ -27,7 +27,4 @@ def extract_chroma(y, sr, n_chroma=12):
     return chroma_features
 
 
-def extract_chroma_rd(y, sr, rd=4,n_chroma=12):
-    array = extract_chroma(y, sr, n_chroma=n_chroma)
-    return reduce_dimensions(array, rd)
 
