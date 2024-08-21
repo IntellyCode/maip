@@ -3,7 +3,13 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 
-def generalise(array: np.ndarray,axis=1) ->np.ndarray:
+def generalise_minimal(array: np.ndarray, axis=1) -> np.array:
+    mean = array.mean(axis=axis)
+    std = array.std(axis=axis)
+    return np.concatenate([mean, std])
+
+
+def generalise(array: np.ndarray, axis=1) -> np.ndarray:
     mean = array.mean(axis=axis)
     std = array.std(axis=axis)
     max_v = array.max(axis=axis)
@@ -17,7 +23,7 @@ def scale(array: np.ndarray) -> np.ndarray:
     return scaler.fit_transform(array.reshape(-1,1)).flatten()
 
 
-def reduce_dimensions(features,n_components=4):
+def reduce_dimensions(features, n_components=4):
     """
     Apply PCA to reduce dimensionality of feature vectors to a single value.
 
