@@ -1,4 +1,5 @@
 import numpy as np
+import scipy
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
@@ -16,6 +17,18 @@ def generalise(array: np.ndarray, axis=1) -> np.ndarray:
     min_v = array.min(axis=axis)
 
     return np.concatenate([mean, std, max_v, min_v])
+
+
+def generalise_advanced(data):
+    mean = np.mean(data, axis=1)
+    std = np.std(data, axis=1)
+    min_val = np.min(data, axis=1)
+    max_val = np.max(data, axis=1)
+    skewness = scipy.stats.skew(data, axis=1)
+    kurtosis = scipy.stats.kurtosis(data, axis=1)
+
+    features = np.concatenate([mean, std, min_val, max_val, skewness, kurtosis])
+    return features
 
 
 def scale(array: np.ndarray) -> np.ndarray:
