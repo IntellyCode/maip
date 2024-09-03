@@ -14,11 +14,11 @@ class Trainer:
     PATH = "/Users/zeniosd/Documents/Programs/Python/maip/data/raw/"
     TXT_PATH = "/Users/zeniosd/Documents/Programs/Python/maip/data/objects/"
 
-    def __init__(self):
-        state = open(os.path.join(Trainer.TXT_PATH, "state.json"), "r")
-        state_dict = j.load(state)
+    def __init__(self,logger):
+        # state = open(os.path.join(Trainer.TXT_PATH, "state.json"), "r")
+        # state_dict = j.load(state)
 
-        self.logger = logging.getLogger(__name__)
+        self.logger = logger
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s -  %(levelname)s - %(message)s',
@@ -26,22 +26,25 @@ class Trainer:
                 logging.StreamHandler(),
             ]
         )
+        """
         if state_dict.key("genres") != Trainer.GENRES:
             state.close()
             return
 
         m = state_dict.key("music")
         l = state_dict.key("labels")
-        self.music,self.labels = [], []
+        self._music, self._labels = [], []
         if m is not None and l is not None:
-            self.music, self.labels = m, l
+            self._music, self._labels = m, l
         state.close()
-
+        """
+        self._music = []
+        self._labels = []
         self.accuracy = 0
         self.classification = None
 
     def get_data(self):
-        return self.music, self.labels
+        return self._music, self._labels
 
     def get_logger(self):
         return self.logger
@@ -53,8 +56,8 @@ class Trainer:
                 f_path = os.path.join(path, file)
                 self.logger.info(f"Loading {genre} features for {f_path}")
                 y, sr = lc.load(f_path)
-                self.music.append((y, sr))
-                self.labels.append(genre)
+                self._music.append((y, sr))
+                self._labels.append(genre)
 
     def train_svm(self, features, C=1.0, kernel="rbf", gamma="scale"):
         X_train, X_test, y_train, y_test, _ = self._data_collection(features)
@@ -70,7 +73,7 @@ class Trainer:
     def _data_collection(self,features):
         X = np.array(features)
         le = LabelEncoder()
-        y = le.fit_transform(self.labels)
+        y = le.fit_transform(self._labels)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         return X_train, X_test, y_train, y_test, le
 
@@ -93,12 +96,5 @@ class Trainer:
         self.accuracy = accuracy_score(y_test, y_pred)
         self.classification = classification_report(y_test, y_pred)
 
-    def __del__(self):
-        state = open(os.path.join(Trainer.TXT_PATH, "state.json"), "w")
-        dic = {
-            "genres": Trainer.GENRES,
-            "music": self.music,
-            "labels": self.labels,
-        }
-        j.dump(dic, state)
-        state.close()
+    def __str__(self):
+        return f"Accuracy: {self.accuracy} \n Classification Report: {self.classification}"
