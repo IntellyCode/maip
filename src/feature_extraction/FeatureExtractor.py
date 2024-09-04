@@ -1,8 +1,36 @@
 import librosa.feature as lf
 import librosa.beat as lb
-import librosa.effects as lef
 import numpy as np
 import pywt
+import scipy
+from sklearn.preprocessing import StandardScaler
+
+
+_HashMap = {
+    "mean": np.ndarray.mean,
+    "std": np.ndarray.std,
+    "min": np.ndarray.min,
+    "max": np.ndarray.max,
+    "skewness": scipy.stats.skew,
+    "kurtosis": scipy.stats.kurtosis,
+}
+_List = ["mean", "std", "min", "max", "skewness", "kurtosis"]
+
+
+def generalise(array: np.ndarray, axis=1, number_of_statistics=6) -> np.ndarray:
+    if number_of_statistics < 1 or number_of_statistics > 6:
+        raise ValueError("Number of statistics must be between 1 and 6")
+    stats = []
+    for i in range(number_of_statistics):
+        key = _List[i]
+        func = _HashMap[key]
+        stats.append(func(array, axis=axis))
+    return np.concatenate([i for i in stats])
+
+
+def scale(array: np.ndarray) -> np.ndarray:
+    scaler = StandardScaler()
+    return scaler.fit_transform(array.reshape(-1, 1)).flatten()
 
 
 class FeatureExtractor:
@@ -52,7 +80,7 @@ class FeatureExtractor:
         def tonnetz(self):
             return lf.tonnetz(y=self.y, sr=self.sr)
 
-        def wavelet(self, wavelet='db1'):
+        def wavelet(self, wavelet=pywt.ContinuousWavelet(name='gaus1', dtype=np.float64)):
             coeffs, _ = pywt.cwt(self.y, scales=np.arange(1, 129), wavelet=wavelet, sampling_period=1 / self.sr)
             return coeffs
 
@@ -66,62 +94,62 @@ class FeatureExtractor:
         return self._music[i]
 
     def get_chroma(self):
-        arr = [m.chroma() for m in self._music]
+        arr = [scale(generalise(m.chroma())) for m in self._music]
         return arr
 
     def get_flatness(self):
-        arr = [m.flatness() for m in self._music]
+        arr = [scale(generalise(m.flatness())) for m in self._music]
         return arr
 
     def get_beats(self):
-        arr = [m.beats() for m in self._music]
+        arr = [scale(generalise(m.beats())) for m in self._music]
         return arr
 
     def get_mel_spectrogram(self):
-        arr =[m.mel_spectrogram() for m in self._music]
+        arr =[scale(generalise(m.mel_spectrogram())) for m in self._music]
         return arr
 
     def get_mfcc(self):
-        arr = [m.mfcc() for m in self._music]
+        arr = [scale(generalise(m.mfcc())) for m in self._music]
         return arr
 
     def get_rms(self):
-        arr = [m.rms() for m in self._music]
+        arr = [scale(generalise(m.rms())) for m in self._music]
         return arr
 
     def get_spec_bandwidth(self):
-        arr = [m.spec_bandwidth() for m in self._music]
+        arr = [scale(generalise(m.spec_bandwidth())) for m in self._music]
         return arr
 
     def get_spec_centroid(self):
-        arr = [m.spec_centroid() for m in self._music]
+        arr = [scale(generalise(m.spec_centroid())) for m in self._music]
         return arr
 
     def get_spec_contrast(self):
-        arr = [m.spec_contrast() for m in self._music]
+        arr = [scale(generalise(m.spec_contrast())) for m in self._music]
         return arr
 
     def get_spec_rolloff(self):
-        arr = [m.spec_rolloff() for m in self._music]
+        arr = [scale(generalise(m.spec_rolloff())) for m in self._music]
         return arr
 
     def get_spec_kurtosis(self):
-        arr = [m.spec_kurtosis() for m in self._music]
+        arr = [scale(generalise(m.spec_kurtosis())) for m in self._music]
         return arr
 
     def get_tempo(self):
-        arr = [m.tempo() for m in self._music]
+        arr = [scale(generalise(m.tempo())) for m in self._music]
         return arr
 
     def get_tonnetz(self):
-        arr = [m.tonnetz() for m in self._music]
+        arr = [scale(generalise(m.tonnetz())) for m in self._music]
         return arr
 
     def get_wavelet(self):
-        arr=[m.wavelet() for m in self._music]
+        arr = [scale(generalise(m.wavelet())) for m in self._music]
         return arr
 
     def get_zcr(self):
-        arr = [m.zcr() for m in self._music]
+        arr = [scale(generalise(m.zcr())) for m in self._music]
         return arr
 

@@ -2,6 +2,8 @@ import logging
 import os
 import librosa.core as lc
 import json as j
+
+import soundfile
 from sklearn.metrics import accuracy_score, classification_report
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
@@ -10,7 +12,7 @@ from sklearn.svm import SVC
 
 
 class Trainer:
-    GENRES = ["classical", "reggae", "rock"]
+    GENRES = ["classical", "reggae", "rock", "jazz"]
     PATH = "/Users/zeniosd/Documents/Programs/Python/maip/data/raw/"
     TXT_PATH = "/Users/zeniosd/Documents/Programs/Python/maip/data/objects/"
 
@@ -55,11 +57,15 @@ class Trainer:
             for file in os.listdir(path):
                 f_path = os.path.join(path, file)
                 self.logger.info(f"Loading {genre} features for {f_path}")
-                y, sr = lc.load(f_path)
-                self._music.append((y, sr))
-                self._labels.append(genre)
+                try:
+                    y, sr = lc.load(f_path)
+                    self._music.append((y, sr))
+                    self._labels.append(genre)
+                except Exception as e:
+                    continue
 
     def train_svm(self, features, C=1.0, kernel="rbf", gamma="scale"):
+        self.logger.info(f"Training SVM on {len(features)} features")
         X_train, X_test, y_train, y_test, _ = self._data_collection(features)
 
         svm_model = SVC(C=C, kernel=kernel, gamma=gamma)
@@ -97,4 +103,4 @@ class Trainer:
         self.classification = classification_report(y_test, y_pred)
 
     def __str__(self):
-        return f"Accuracy: {self.accuracy} \n Classification Report: {self.classification}"
+        return f"Accuracy: {self.accuracy} \n Classification Report: \n{self.classification}"
